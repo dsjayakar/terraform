@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ing
+  namespace: dev
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: default
+    alb.ingress.kubernetes.io/group.order: '2'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/tags: env=prod,kubernetes=true
+    alb.ingress.kubernetes.io/security-groups: sg-05becd8b09cdauyc8d
+    alb.ingress.kubernetes.io/subnets: subnet-093de4c9c0dt6aa06,subnet-0f11661aa847a066
+    alb.ingress.kubernetes.io/load-balancer-attributes: deletion_protection.enabled=true
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=600
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /mail
+            pathType: Prefix
+            backend:
+              service:
+                name: mail-stable
+                port:
+                  name: http
+      host: "*.mail.google.com"
