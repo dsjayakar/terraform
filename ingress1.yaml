@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+{{- if .Values.ingress.name }}
+  name: {{ .Values.ingress.name }}
+{{- else }}
+  name: {{ template "fullname" . }}
+{{- end }}
+  namespace: {{ .Values.env }}
+{{- if .Values.ingress.annotations }}
+  annotations:
+{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{- end }}
+spec:
+  rules:
+    - http:
+       paths:
+         - path: /*
+           backend:
+              serviceName: redirect
+              servicePort: use-annotation
+         - path: /*
+           backend:
+{{- if .Values.service.name }}
+              serviceName: {{ .Values.service.name }}
+{{- else }}
+              serviceName: {{ template "fullname" . }}
+{{- end }}
+              servicePort: {{ .Values.service.externalPort }}
